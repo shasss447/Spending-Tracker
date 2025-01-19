@@ -1,0 +1,5 @@
+django
+pdfplumber
+spacy
+openai
+matplotlib
