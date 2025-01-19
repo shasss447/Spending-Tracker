@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spent Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .section {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+
+        form {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 150px;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .budget-display {
+            background-color: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .budget-display h4 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .insights-section {
+            margin-top: 2rem;
+        }
+
+        .insights-section h2 {
+            color: #2c3e50;
+            margin-bottom: 1rem;
+        }
+
+        .insights-section p {
+            line-height: 1.6;
+            color: #555;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            input[type="number"],
+            input[type="file"] {
+                width: 100%;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="section">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div>
+                    {{form.file}}
+                </div>
+                <button type="submit">Upload</button>
+            </form>
+        </div>
+
+        <div class="section">
+            <form action="{% url 'show_graph' %}" method="get">
+                <button type="submit">Spend Graph</button>
+            </form>
+
+            <form action="{% url 'analytics' %}" method="get" style="margin-top: 1rem;">
+                <button type="submit">View Analytics</button>
+            </form>
+        </div>
+
+        <div class="section">
+            <form action="{% url 'budget' %}" method="get">
+                {% csrf_token %}
+                <label for="budget">Budget</label>
+                <input type="number" name="budget" id="budget" required>
+                <button type="submit">Set Budget</button>
+            </form>
+
+            <div class="budget-display">
+                <h4>Current Budget: ₹{{ budget|default:0 }}</h4>
+                <h4>Budget Left: ₹{{ budget_left|default:0 }}</h4>
+            </div>
+        </div>
+
+        <div class="section">
+            <form action="{% url 'insights' %}" method="get">
+                {% csrf_token %}
+                <input type="hidden" name="budget" value="{{ budget|default:0 }}">
+                <button type="submit">Get Insights</button>
+            </form>
+
+            <div class="insights-section">
+                {% if insights %}
+                    <h2>Insights:</h2>
+                    <p>{{ insights }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
